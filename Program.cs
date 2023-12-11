@@ -40,14 +40,18 @@ new Game()
 }
 ];
 
-app.MapGet("/games", () =>
+var gameGroup = app.MapGroup("/games")
+.WithParameterValidation()
+.WithOpenApi();
+
+gameGroup.MapGet("/", () =>
 {
 
     return games;
-})
-.WithOpenApi();
+});
 
-app.MapGet("/games/{id}", (int id) =>
+
+gameGroup.MapGet("/{id}", (int id) =>
 {
 
     var game = games.FirstOrDefault((game) => game.Id == id);
@@ -55,19 +59,17 @@ app.MapGet("/games/{id}", (int id) =>
 
     return Results.Ok(game);
 })
-.WithName("GetGame")
-.WithOpenApi();
+.WithName("GetGame");
 
-app.MapPost("/games", (Game game) =>
+gameGroup.MapPost("/", (Game game) =>
 {
     var Id = games.Max(game => game.Id);
     game.Id = Id + 1;
     games.Add(game);
     return Results.CreatedAtRoute("GetGame", new { Id }, game);
-})
-.WithOpenApi();
+});
 
-app.MapPut("/games", (Game updatedGame) =>
+gameGroup.MapPut("/", (Game updatedGame) =>
 {
     var game = games.FirstOrDefault(game => game.Id == updatedGame.Id);
 
@@ -79,10 +81,9 @@ app.MapPut("/games", (Game updatedGame) =>
     game.Name = updatedGame.Name;
 
     return Results.Ok(game);
-})
-.WithOpenApi();
+});
 
-app.MapDelete("/games/{id}", (int id) =>
+gameGroup.MapDelete("/{id}", (int id) =>
 {
 
     var game = games.FirstOrDefault((game) => game.Id == id);
@@ -91,8 +92,7 @@ app.MapDelete("/games/{id}", (int id) =>
     games.Remove(game);
 
     return Results.Ok(game);
-})
-.WithOpenApi();
+});
 
 app.Run();
 
