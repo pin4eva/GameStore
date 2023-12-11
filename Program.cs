@@ -1,8 +1,10 @@
 
 
+using GameStore.Data;
 using GameStore.game.Endpoints;
 using GameStore.game.Repositories;
 using GameStore.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +12,15 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+
+// database setting
+builder.Services.AddDbContext<DataContext>(option =>
+{
+    option.UseNpgsql(builder.Configuration.GetConnectionString("DATABASE_URL"));
+}
+);
+
 builder.Services.AddSingleton<IGameRepository, GameRespository>();
 
 var app = builder.Build();
