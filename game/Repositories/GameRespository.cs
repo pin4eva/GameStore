@@ -1,5 +1,6 @@
 
 
+using GameStore.game.Dtos;
 using GameStore.game.Entities;
 using GameStore.game.Repositories;
 
@@ -9,14 +10,14 @@ public class GameRespository : IGameRepository
 {
     private readonly List<Game> games = [
     new Game()
-{
-Id = 1,
-Name = "Street Fighter II",
-Genre = "Fighting",
-Price = 19.99M,
-ReleaseDate = new DateTime(1991,2,1),
-ImageUri = "https://placeholder.co/100"
-}
+        {
+            Id = 1,
+            Name = "Street Fighter II",
+            Genre = "Fighting",
+            Price = 19.99M,
+            ReleaseDate = new DateTime(1991,2,1),
+            ImageUri = "https://placeholder.co/100"
+        }
     ];
 
 
@@ -30,15 +31,23 @@ ImageUri = "https://placeholder.co/100"
         return games.FirstOrDefault(game => game.Id == id);
     }
 
-    public Game Create(Game game)
+    public Game Create(CreateGameDTO newGame)
     {
         var Id = games.Max(game => game.Id);
-        game.Id = Id + 1;
+        Game game = new()
+        {
+            Id = Id + 1,
+            Name = newGame.Name,
+            ImageUri = newGame.ImageUri,
+            Genre = newGame.Genre,
+            ReleaseDate = newGame.ReleaseDate,
+            Price = newGame.Price
+        };
         games.Add(game);
         return game;
     }
 
-    public void UpdateOne(Game updatedGame)
+    public void UpdateOne(UpdateGameDTO updatedGame)
     {
         var game = games.FirstOrDefault(game => game.Id == updatedGame.Id);
 
@@ -46,7 +55,11 @@ ImageUri = "https://placeholder.co/100"
 
         if (game is not null)
         {
-            game = updatedGame;
+            game.Name = updatedGame.Name;
+            game.Genre = updatedGame.Genre;
+            game.ImageUri = updatedGame.ImageUri;
+            game.Price = updatedGame.Price;
+            game.ReleaseDate = updatedGame.ReleaseDate;
         }
 
 
