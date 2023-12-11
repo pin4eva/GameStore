@@ -7,7 +7,7 @@ public class DataContext : DbContext
 {
     protected readonly IConfiguration configuration;
 
-    public DataContext(IConfiguration _configuration, DbContextOptions<DataContext> options)
+    public DataContext(IConfiguration _configuration, DbContextOptions<DataContext> options) : base(options)
     {
         configuration = _configuration;
     }

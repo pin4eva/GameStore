@@ -1,55 +1,52 @@
 
 
+using GameStore.Data;
 using GameStore.game.Dtos;
 using GameStore.game.Entities;
 using GameStore.game.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace GameStore.Repositories;
 
 public class GameRespository : IGameRepository
 {
-    private readonly List<Game> games = [
-    new Game()
-        {
-            Id = 1,
-            Name = "Street Fighter II",
-            Genre = "Fighting",
-            Price = 19.99M,
-            ReleaseDate = new DateTime(1991,2,1),
-            ImageUri = "https://placeholder.co/100"
-        }
-    ];
 
+    private readonly DataContext db;
+
+    public GameRespository(DataContext db)
+    {
+        this.db = db;
+    }
 
     public IEnumerable<Game> FindAll()
     {
-        return games;
+        return db.games.AsNoTracking().ToList();
     }
 
     public Game? FindOneById(int id)
     {
-        return games.FirstOrDefault(game => game.Id == id);
+        return db.games.FirstOrDefault(game => game.Id == id);
     }
 
     public Game Create(CreateGameDTO newGame)
     {
-        var Id = games.Max(game => game.Id);
         Game game = new()
         {
-            Id = Id + 1,
             Name = newGame.Name,
-            ImageUri = newGame.ImageUri,
             Genre = newGame.Genre,
-            ReleaseDate = newGame.ReleaseDate,
-            Price = newGame.Price
+            ImageUri = newGame.ImageUri,
+            Price = newGame.Price,
+            ReleaseDate = newGame.ReleaseDate
         };
-        games.Add(game);
+        db.games.Add(game);
+        db.SaveChanges();
+
         return game;
     }
 
     public void UpdateOne(UpdateGameDTO updatedGame)
     {
-        var game = games.FirstOrDefault(game => game.Id == updatedGame.Id);
+        var game = db.games.FirstOrDefault(game => game.Id == updatedGame.Id);
 
 
 
@@ -60,7 +57,10 @@ public class GameRespository : IGameRepository
             game.ImageUri = updatedGame.ImageUri;
             game.Price = updatedGame.Price;
             game.ReleaseDate = updatedGame.ReleaseDate;
+            db.games.Update(game);
+            db.SaveChanges();
         }
+
 
 
     }
@@ -68,14 +68,11 @@ public class GameRespository : IGameRepository
     public void DeleteOne(int id)
 
     {
-        var game = games.FirstOrDefault(game => game.Id == id);
+        db.games.Where(game => game.Id == id).ExecuteDelete();
 
 
 
-        if (game is not null)
-        {
-            games.Remove(game);
-        }
+
     }
 
 }

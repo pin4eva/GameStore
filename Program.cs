@@ -21,9 +21,16 @@ builder.Services.AddDbContext<DataContext>(option =>
 }
 );
 
-builder.Services.AddSingleton<IGameRepository, GameRespository>();
+builder.Services.AddScoped<IGameRepository, GameRespository>();
 
 var app = builder.Build();
+
+// auto apply migration on service start
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<DataContext>();
+    dbContext.Database.Migrate();
+}
 
 
 // games endpoint;
