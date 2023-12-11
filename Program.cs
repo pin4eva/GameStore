@@ -63,7 +63,7 @@ app.MapPost("/games", (Game game) =>
     var Id = games.Max(game => game.Id);
     game.Id = Id + 1;
     games.Add(game);
-    return game;
+    return Results.CreatedAtRoute("GetGame", new { Id }, game);
 })
 .WithOpenApi();
 

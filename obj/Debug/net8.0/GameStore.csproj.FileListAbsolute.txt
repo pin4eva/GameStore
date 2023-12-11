@@ -31,3 +31,4 @@ C:\Users\pin4e\Desktop\projects\GameStore\obj\Debug\net8.0\refint\GameStore.dll
 C:\Users\pin4e\Desktop\projects\GameStore\obj\Debug\net8.0\GameStore.pdb
 C:\Users\pin4e\Desktop\projects\GameStore\obj\Debug\net8.0\GameStore.genruntimeconfig.cache
 C:\Users\pin4e\Desktop\projects\GameStore\obj\Debug\net8.0\ref\GameStore.dll
+C:\Users\pin4e\Desktop\projects\GameStore\obj\Debug\net8.0\GameStore.sourcelink.json
