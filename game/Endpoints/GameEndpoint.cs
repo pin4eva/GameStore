@@ -13,48 +13,49 @@ public static class GameEndpoint
                         .WithParameterValidation()
                         .WithOpenApi();
 
-        gameGroup.MapGet("/", (IGameRepository repository) =>
+        gameGroup.MapGet("/", async (IGameRepository repository) =>
         {
 
-            var games = repository.FindAll().Select((game) => game.AsDto());
+            var games = await repository.FindAll();
+            games.Select((game) => game.AsDto());
             return games;
         });
 
 
-        gameGroup.MapGet("/{id}", (IGameRepository repository, int id) =>
+        gameGroup.MapGet("/{id}", async (IGameRepository repository, int id) =>
         {
 
-            var game = repository.FindOneById(id);
+            var game = await repository.FindOneById(id);
             if (game is null) return Results.NotFound("Invalid game id");
 
             return Results.Ok(game.AsDto());
         })
         .WithName("GetGame");
 
-        gameGroup.MapPost("/", (IGameRepository repository, CreateGameDTO game) =>
+        gameGroup.MapPost("/", async (IGameRepository repository, CreateGameDTO game) =>
         {
-            var newGame = repository.Create(game);
+            var newGame = await repository.Create(game);
             return Results.CreatedAtRoute("GetGame", new { Id = newGame.Id }, newGame);
         });
 
-        gameGroup.MapPut("/", (IGameRepository repository, UpdateGameDTO updatedGame) =>
+        gameGroup.MapPut("/", async (IGameRepository repository, UpdateGameDTO updatedGame) =>
         {
-            var game = repository.FindOneById(updatedGame.Id);
+            var game = await repository.FindOneById(updatedGame.Id);
             if (game is null) return Results.NotFound("Invalid game id");
 
 
 
-            repository.UpdateOne(updatedGame);
+            await repository.UpdateOne(updatedGame);
 
             return Results.Ok(game);
         });
 
-        gameGroup.MapDelete("/{id}", (IGameRepository repository, int id) =>
+        gameGroup.MapDelete("/{id}", async (IGameRepository repository, int id) =>
         {
 
-            var game = repository.FindOneById(id);
+            var game = await repository.FindOneById(id);
             if (game is null) return Results.NotFound("Invalid game id");
-            repository.DeleteOne(id);
+            await repository.DeleteOne(id);
 
             return Results.Ok(game);
         });

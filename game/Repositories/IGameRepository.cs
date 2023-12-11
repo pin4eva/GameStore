@@ -5,10 +5,10 @@ namespace GameStore.game.Repositories;
 
 public interface IGameRepository
 {
-    IEnumerable<Game> FindAll();
-    Game? FindOneById(int id);
-    Game Create(CreateGameDTO game);
+    Task<IEnumerable<Game>> FindAll();
+    Task<Game?> FindOneById(int id);
+    Task<Game> Create(CreateGameDTO game);
 
-    void UpdateOne(UpdateGameDTO game);
-    void DeleteOne(int id);
+    Task UpdateOne(UpdateGameDTO game);
+    Task DeleteOne(int id);
 }

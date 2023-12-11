@@ -8,27 +8,22 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GameStore.Repositories;
 
-public class GameRespository : IGameRepository
+public class GameRespository(DataContext db) : IGameRepository
 {
 
-    private readonly DataContext db;
+    private readonly DataContext db = db;
 
-    public GameRespository(DataContext db)
+    public async Task<IEnumerable<Game>> FindAll()
     {
-        this.db = db;
+        return await db.games.AsNoTracking().ToListAsync();
     }
 
-    public IEnumerable<Game> FindAll()
+    public async Task<Game?> FindOneById(int id)
     {
-        return db.games.AsNoTracking().ToList();
+        return await db.games.FirstOrDefaultAsync(game => game.Id == id);
     }
 
-    public Game? FindOneById(int id)
-    {
-        return db.games.FirstOrDefault(game => game.Id == id);
-    }
-
-    public Game Create(CreateGameDTO newGame)
+    public async Task<Game> Create(CreateGameDTO newGame)
     {
         Game game = new()
         {
@@ -39,12 +34,12 @@ public class GameRespository : IGameRepository
             ReleaseDate = newGame.ReleaseDate
         };
         db.games.Add(game);
-        db.SaveChanges();
+        await db.SaveChangesAsync();
 
         return game;
     }
 
-    public void UpdateOne(UpdateGameDTO updatedGame)
+    public async Task UpdateOne(UpdateGameDTO updatedGame)
     {
         var game = db.games.FirstOrDefault(game => game.Id == updatedGame.Id);
 
@@ -58,21 +53,18 @@ public class GameRespository : IGameRepository
             game.Price = updatedGame.Price;
             game.ReleaseDate = updatedGame.ReleaseDate;
             db.games.Update(game);
-            db.SaveChanges();
+            await db.SaveChangesAsync();
         }
 
 
 
     }
 
-    public void DeleteOne(int id)
+    public async Task DeleteOne(int id)
 
     {
-        db.games.Where(game => game.Id == id).ExecuteDelete();
-
-
-
-
+        await db.games.Where(game => game.Id == id)
+            .ExecuteDeleteAsync();
     }
 
 }
